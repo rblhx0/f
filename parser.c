@@ -258,6 +258,9 @@ static int resolve_local(struct compiler* C,struct token name){
 	for (int index = current->local_count-1; index>=0 ; index--) {
 		struct local* loc = &current->locals[index];
 		if (identifier_equal(name,loc->name)) {
+			if (loc->depth == -1) {
+				error(P.prev,"Can't read local variable in its own initializer.");
+			}
 			return index ;
 		}
 	}
@@ -301,7 +304,7 @@ static void add_local(struct token name) {
 
 	struct local* loc = &current->locals[current->local_count++];
 	loc->name = name;
-	loc->depth = current->scope_depth;
+	loc->depth = -1;
 }
 
 static void declare_variable() {
@@ -331,8 +334,12 @@ static uint8_t parse_variable() {
 	return identifier_constant(P.prev);
 }
 
+static void mark_intilized() {
+	current->locals[current->local_count - 1].depth = current->scope_depth;	
+}
 static void define_variable(uint8_t index) {
 	if (current->scope_depth > 0) {
+		mark_intilized();
 		return;
 	}
 	emit_bytes(OP_DEFINE_GLOBAL,index);
@@ -346,10 +353,16 @@ static void variable_decl() {
 	define_variable(index);
 }
 
+static void if_statement() {
+	expression();
+}
+
 static void statement() {
 	if (token_match(TOKEN_WRITE)) {
 		write_stmt(false);		
-	}else {
+	}else if (token_match(TOKEN_IF)){
+		if_statement();
+	}else{
 		expression_statement();		
 	}
 }

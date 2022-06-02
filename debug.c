@@ -12,6 +12,12 @@ static int constant_instruction(const char *msg, struct chunk *ch, int offset) {
 	return offset + 2;
 }
 
+static int byte_instruction(const char *msg, struct chunk *ch, int offset) {
+	uint8_t constant = ch->code[offset + 1];
+	printf("%s  %04d\n", msg, constant);
+	return offset + 2;
+}
+
 static int simple_instruction(const char *msg, int offset) {
 	printf("%s\n", msg);
 	return offset + 1;
@@ -69,9 +75,9 @@ int disassemble_instruction(struct chunk *ch, int offset) {
 		case OP_SET_GLOBAL:
 			return constant_instruction("OP_SET_GLOBAL", ch, offset);
 		case OP_SET_LOCAL:
-			return constant_instruction("OP_SET_LOCAL", ch, offset);
+			return byte_instruction("OP_SET_LOCAL", ch, offset);
 		case OP_GET_LOCAL:
-			return constant_instruction("OP_GET_LOCAL", ch, offset);
+			return byte_instruction("OP_GET_LOCAL", ch, offset);
 		default:
 			printf("unknown opcode\n");
 			return offset + 1;

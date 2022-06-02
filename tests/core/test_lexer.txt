@@ -1,0 +1,21 @@
+do 
+	var a = 3;
+end
+
+def foo() do
+	print(1)
+end
+
+struct bar do
+	var a
+	var bar
+
+	def init() do
+		print("yo")
+	end
+
+	def sum() do
+		return self.a + self.bar \
+			+ (self.a * self.bar)
+	end
+end

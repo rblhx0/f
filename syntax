@@ -1,0 +1,15 @@
+struct Vector do
+	var x
+	var y
+	def init(x,y) do
+		self.x = x
+		self.y = y
+	end
+end
+
+var vector = Vector(1,2)
+
+
+def foo() do
+	print("test")
+end
